@@ -1,0 +1,72 @@
+---
+title: "Seattle Hottest Time of Day Seasonally"
+author: "Roger Andre"
+date: 'Nov 21, 2023'
+format: 
+  html:
+    code-fold: true
+    theme: flatly
+execute: 
+  enabled: true
+---
+
+## Does the hottest time of day change?
+
+Previously, I looked at a single hot day in Seattle to see when the maximum temperature occurred.  For a day in early August 2022, the high temp was between 3:00 and 4:00 PM.  Now the question I want to answer is whether the time of day at which the maximum temp occurs changes over the course of the year?
+
+## Data prep
+
+Again, I'll download some weather data I've been capturing and storing on [Github]("https://github.com/lagerratrobe/weather_station/raw/main/Data/station_obs.RDS") and will extract the hourly temperature values for Seattle over the past year.  Then, I'll identify the hottest temp for each day and the time that took place.  Finally, I'll plot the whole mess and we'll see what happens.
+
+```{r}
+#| echo: false
+
+library(dplyr, warn.conflicts = FALSE)
+library(lubridate, warn.conflicts = FALSE)
+library(ggplot2)
+
+df <- readRDS(url("https://github.com/lagerratrobe/weather_station/raw/main/Data/station_obs.RDS"))
+df |> filter(stationID == "KWASEATT2743") |>
+  mutate(stationID,
+         datetime = ymd_hms(obsTimeLocal),
+         temp = imperial.temp,
+         .keep = "none") -> df
+```
+
+```{r}
+#| echo: false
+df |> group_by(date(datetime)) |> 
+  slice_max(temp, n = 1, with_ties = FALSE) |>
+  ungroup() |>
+  select(stationID, 
+         datetime, 
+         'high_temp' = temp) -> daily_max_temps
+```
+
+The data that is going to be plotted looks like this:
+
+```{r}
+#| echo: false
+
+head(daily_max_temps) |> as.data.frame()
+```
+
+### Plot Results
+
+When I plot this with Date on the X axis and Hour on the Y axis, I see that in general, the max temp is at around 3:00PM.  During days with warmer temperatures this is very consistent, however as days get colder, there appears to be greater variability in when the high temp is achieved. In some cases it is early in the morning or even at night.
+
+```{r}
+#| echo: false
+daily_max_temps |> 
+  ggplot(mapping = aes(x =datetime, y= hour(datetime), color=high_temp)) +
+  scale_color_gradient2(low = "darkblue",
+                        mid = "lightpink",
+                       high = "red",
+                       midpoint = 60) +
+  scale_y_reverse() +
+  geom_jitter(alpha = .65) +
+  geom_smooth(formula = y ~ x, method=lm, se=FALSE, col='black') +
+  labs(x="Date",
+       y="Hour")
+```
+

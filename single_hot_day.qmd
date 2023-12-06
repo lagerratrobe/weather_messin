@@ -1,0 +1,68 @@
+---
+title: "Seattle Hot Day"
+author: "Roger Andre"
+date: 'Nov 20, 2023'
+format: 
+  html:
+    code-fold: true
+    theme: flatly
+execute: 
+  enabled: true
+---
+
+## What's the hottest time of the day?
+
+As part of my ongoing analysis of the weather in Seattle over the past year, I want to see what the hottest part of the day is.  To do that, I'll download weather data and pick one day where the temperature got above 80 deg F and then plot the hourly temperatures.
+
+```{r}
+#| echo: false
+# Read in the weather data, filter it down to just Seattle and Sequim, select time, temp and precip columns and create proper date and time objects.
+library(dplyr, warn.conflicts = FALSE)
+library(lubridate, warn.conflicts = FALSE)
+
+df <- readRDS(url("https://github.com/lagerratrobe/weather_station/raw/main/Data/station_obs.RDS"))
+
+df |> filter(stationID %in% c("KWASEATT2743", "KWASEQUI431")) |>
+  mutate(stationID,
+         datetime = ymd_hms(obsTimeLocal),
+         temp = imperial.temp,
+         precip = imperial.precipTotal,
+         .keep = "none") -> df
+```
+
+### Step 1. Find a couple hot days in Seattle
+
+(For our purposes, "hot" will be 80 deg, or warmer.)
+
+```{r}
+#| echo: false
+df |> 
+  group_by(stationID, date(datetime)) |> 
+  summarise(max_temp = max(temp), .groups = "keep") |>
+  filter(stationID == "KWASEATT2743" &  max_temp >= 80) |> 
+  head(n=3) |> as.data.frame()
+```
+### Step 2. Pull the hourly values for one day and plot them
+
+```{r}
+#| echo: false
+library(ggplot2)
+hot_day <- filter(df,
+                  stationID == "KWASEATT2743" & 
+                    date(datetime) == '2022-08-06')
+
+ggplot(hot_day, mapping = aes(x = datetime, y=temp)) + 
+  geom_line() +
+  scale_x_datetime(date_labels = "%H:%M") +
+  geom_vline(xintercept=hot_day$datetime[15],color="red") +
+  annotate("text", 
+           x=hot_day$datetime[16], 
+           y=60, 
+           label=format(hot_day$datetime[15], "%H:%M"),
+           color="red") +
+  ggtitle("Aug 6, 2022 Hourly Temps") +
+  theme(plot.title = element_text(hjust = 0.5)) + 
+  labs(x = "Time",
+       y = "Temp")
+
+```
