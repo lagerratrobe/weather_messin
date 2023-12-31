@@ -1,0 +1,23 @@
+---
+title: "2023 Seattle Weather - Year in Review"
+author: "Roger Andre"
+date: "Dec 31, 2023"
+format: 
+  html:
+    code-fold: true
+    theme: flatly
+execute: 
+  enabled: true
+---
+  
+## What happened in 2023?
+
+I've been logging data from a local weather station and I thought it would be fun to look at a couple variables that I captured over the past year.  This won't be a very comprehensive analysis, but hopefully will give some fun perspective about what we experienced in 2023.
+
+## The Data
+
+
+
+```{r}
+#| echo: false
+```
