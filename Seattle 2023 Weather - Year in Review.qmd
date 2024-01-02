@@ -12,7 +12,7 @@ execute:
   
 ## What happened in 2023?
 
-I've been logging data from a local weather station for a little over a year and I thought it would be fun to look at a couple variables that I captured to see what they can tell me about the wetaher here in 2023.  You'd think that having lived through it, I'd have a pretty good idea of that, but memory is a porous thing and it's good to be reminded sometimes of what really took place, not what we *think* happened.  This won't be a very comprehensive analysis, but hopefully will give some fun perspective about what we really experianced in 2023.
+I've been logging data from a local weather station for a little over a year and I thought it would be fun to look at a couple variables that I captured to see what they can tell me about the weather here in 2023.  You'd think that having lived through it, I'd have a pretty good idea of that, but memory is a porous thing and it's good to be reminded sometimes of what really took place, not what we *think* happened.  This won't be a very comprehensive analysis, but hopefully will give some fun perspective about what we really experianced in 2023.
 
 ## The Data
 
